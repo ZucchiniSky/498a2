@@ -5,8 +5,10 @@
 
 import preprocess
 import math
+from os import listdir
+from os.path import isfile, join
 
-docid = 1
+docid = 0
 
 def indexDocument(text, docw, queryw, index):
     docid += 1
@@ -42,8 +44,11 @@ def weighTerm(token, index, data, wscheme):
         sum = 0.0
         for i in range(0, index[token][0]):
             sum += weighTermTop(token, index, token[1][i][1], wscheme)
-        w /= sum
+        w /= math.sqrt(sum)
     return w
+
+def sortMostRelevant(x, y):
+    return x[1] - y[1]
 
 def retrieveDocuments(query, index, docw, queryw):
     tokens = preprocess.tokenizeText(query)
@@ -68,4 +73,30 @@ def retrieveDocuments(query, index, docw, queryw):
     query = {}
     for token in set(tokens):
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
-    #now use inner product to calculate similarity
+    rank = []
+    for doc in docs:
+        sum = 0.0
+        for token in set(tokens):
+            sum += query[token] + docws[doc][token]
+        rank.append([doc, sum])
+    rank = sorted(rank, sortMostRelevant)
+    return rank
+
+def main(args):
+    if len(args) != 5:
+        print "incorrect command line arguments"
+    docw = args[1]
+    queryw = args[2]
+    folder = args[3]
+    files = [folder + filename for filename in listdir(folder) if isfile(join(folder, filename))]
+    index = {}
+    for filename in files:
+        filein = open(filename)
+        index = indexDocument(filein.read(), docw, queryw, index)
+        filein.close()
+    queryin = open(args[4])
+    i = 0
+    for line in queryin:
+        i += 1
+        for data in retrieveDocuments(line, index, docw, queryw):
+            print str(i) + " " + str(data[0]) + " " + str(data[1])
