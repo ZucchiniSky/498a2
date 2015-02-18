@@ -98,9 +98,10 @@ def retrieveDocuments(query, index, docw, queryw):
         for token in docws[doc]:
             cosinedoc += docws[doc][token] * docws[doc][token]
         cosinedoc = math.sqrt(cosinedoc)
+        if cosinedoc == 0 or cosinequery == 0:
+            continue
         weight = weight / (cosinedoc * cosinequery)
-        if weight > 0:
-            rank.append([doc, weight])
+        rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     return rank
 
