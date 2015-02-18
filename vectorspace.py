@@ -14,8 +14,7 @@ def indexDocument(text, docw, queryw, index):
     global docid
     docid += 1
     tokens = preprocess.tokenizeText(text)
-    uniquetokens = set(tokens)
-    for token in uniquetokens:
+    for token in set(tokens):
         if index.get(token) == None:
             index[token] = [0, []]
         tokendata = index[token]
@@ -79,7 +78,6 @@ def retrieveDocuments(query, index, docw, queryw):
                 if index[token][1][i][0] == doc:
                     data = index[token][1][i][1]
             docws[doc][token] = weighTerm(token, index, data, docw)
-    print docws
     query = {}
     for token in set(tokens):
         if index.get(token) == None:
@@ -87,13 +85,22 @@ def retrieveDocuments(query, index, docw, queryw):
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
     rank = []
     for doc in docs:
-        sum = 0.0
+        weight = 0.0
         for token in set(tokens):
             if index.get(token) == None or docws[doc].get(token) == None:
                 continue
-            sum += query[token] * docws[doc][token]
-        if sum > 0:
-            rank.append([doc, sum])
+            weight += query[token] * docws[doc][token]
+        cosinequery = 0.0
+        for token in query:
+            cosinequery += query[token] * query[token]
+        cosinequery = math.sqrt(cosinedoc)
+        cosinedoc = 0.0
+        for token in docws[doc]:
+            cosinedoc += docws[doc][token] * docws[doc][token]
+        cosinedoc = math.sqrt(cosinedoc)
+        weight = weight / (cosinedoc * cosinequery)
+        if weight > 0:
+            rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     return rank
 
