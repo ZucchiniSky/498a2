@@ -11,6 +11,7 @@ from os.path import isfile, join
 docid = 0
 
 def indexDocument(text, docw, queryw, index):
+    global docid
     docid += 1
     tokens = preprocess.tokenizeText(text)
     uniquetokens = set(tokens)
