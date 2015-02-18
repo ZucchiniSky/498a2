@@ -16,6 +16,8 @@ def indexDocument(text, docw, queryw, index):
     tokens = preprocess.tokenizeText(text)
     uniquetokens = set(tokens)
     for token in uniquetokens:
+        if index.get(token) == None:
+            index[token] = []
         tokendata = index[token]
         tokendata[0] += 1
         tokendata[1].append([docid, tokens.count(token)])
