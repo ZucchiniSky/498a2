@@ -45,7 +45,7 @@ def weighTerm(token, index, data, wscheme):
     if wscheme[2] == "c":
         sum = 0.0
         for i in range(0, index[token][0]):
-            sum += weighTermTop(token, index, token[1][i][1], wscheme)
+            sum += weighTermTop(token, index, index[token][1][i][1], wscheme)
         w /= math.sqrt(sum)
     return w
 
@@ -124,5 +124,8 @@ def main(args):
         for data in retrieveDocuments(line, index, docw, queryw):
             print str(i) + " " + str(data[0]) + " " + str(data[1])
 
-def runVec():
-    main([",", "tfx", "tfx", "cranfieldDocs/", "cranfield.queries.test"])
+def runVecTfidx():
+    runVec("tfx", "tfx")
+    
+def runVec(docw, queryw):
+    main([",", docw, queryw, "cranfieldDocs/", "cranfield.queries.test"])
