@@ -70,7 +70,6 @@ def retrieveDocuments(query, index, docw, queryw):
             if docstokens.get(doc) == None:
                 docstokens[doc] = []
             docstokens[doc].append(token)
-    print docstokens
     docws = {}
     for doc in docs:
         docws[doc] = {}
@@ -86,7 +85,6 @@ def retrieveDocuments(query, index, docw, queryw):
         if index.get(token) == None:
             continue
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
-    print query
     rank = []
     for doc in docs:
         sum = 0.0
@@ -94,7 +92,6 @@ def retrieveDocuments(query, index, docw, queryw):
             if index.get(token) == None or docws[doc].get(token) == None:
                 continue
             sum += query[token] * docws[doc][token]
-        print [doc, sum]
         if sum > 0:
             rank.append([doc, sum])
     rank = sorted(rank, sortMostRelevant)
