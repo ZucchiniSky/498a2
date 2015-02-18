@@ -51,7 +51,11 @@ def weighTerm(token, index, data, wscheme):
     return w
 
 def sortMostRelevant(x, y):
-    return x[1] - y[1]
+    if x == y:
+        return 0
+    if x > y:
+        return 1
+    return -1
 
 def retrieveDocuments(query, index, docw, queryw):
     tokens = preprocess.tokenizeText(query)
