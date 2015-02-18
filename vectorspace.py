@@ -51,9 +51,9 @@ def weighTerm(token, index, data, wscheme):
     return w
 
 def sortMostRelevant(x, y):
-    if x == y:
+    if x[1] == y[1]:
         return 0
-    if x > y:
+    if x[1] > y[1]:
         return 1
     return -1
 
