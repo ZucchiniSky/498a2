@@ -85,7 +85,7 @@ def retrieveDocuments(query, index, docw, queryw):
             continue
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
     rank = []
-    for doc in docs:
+    for doc in docws:
         sum = 0.0
         for token in set(tokens):
             if index.get(token) == None or docws[doc].get(token) == None:
