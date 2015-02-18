@@ -29,8 +29,8 @@ def weighTermTop(token, index, data, wscheme):
     if wscheme[0] == "n":
         maxtf = data
         for i in range(0, index[token][0]):
-            if index[token][0][i][1] > maxtf:
-                maxtf = index[token][0][i][1]
+            if index[token][1][i][1] > maxtf:
+                maxtf = index[token][1][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
         w *= math.log(docid / index[token][0], 2)
@@ -126,6 +126,6 @@ def main(args):
 
 def runVecTfidx():
     runVec("tfx", "tfx")
-    
+
 def runVec(docw, queryw):
     main([",", docw, queryw, "cranfieldDocs/", "cranfield.queries.test"])
