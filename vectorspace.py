@@ -88,12 +88,9 @@ def retrieveDocuments(query, index, docw, queryw):
     for doc in docs:
         sum = 0.0
         for token in set(tokens):
-            if index.get(token) == None:
+            if index.get(token) == None or docws[doc].get(token) == None:
                 continue
-            tokenindoc = 0
-            if docws[doc].get(token) != None:
-                tokenindoc = docws[doc][token]
-            sum += query[token] + tokenindoc
+            sum += query[token] * docws[doc][token]
         rank.append([doc, sum])
     rank = sorted(rank, sortMostRelevant)
     return rank
