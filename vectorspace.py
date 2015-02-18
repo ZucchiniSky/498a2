@@ -33,9 +33,9 @@ def weighTermTop(token, index, data, wscheme):
                 maxtf = index[token][0][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        w *= math.log(docid / index[token][0])
+        w *= math.log(docid / index[token][0], 2)
     if wscheme[1] == "p":
-        w *= math.log((docid - index[token][0]) / index[token][0])
+        w *= math.log((docid - index[token][0]) / index[token][0], 2)
     return w
 
 def weighTerm(token, index, data, wscheme):
@@ -117,7 +117,6 @@ def main(args):
         filein = open(filename)
         index = indexDocument(filein.read(), docw, queryw, index)
         filein.close()
-    print index
     queryin = open(args[4])
     i = 0
     for line in queryin:
