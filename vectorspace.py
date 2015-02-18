@@ -58,6 +58,8 @@ def retrieveDocuments(query, index, docw, queryw):
     docs = set()
     docstokens = {}
     for token in tokens:
+        if index.get(token) == None:
+            continue
         for i in range(0, index[token][0]):
             doc = index[token][1][i][0]
             docs.add(doc)
@@ -75,11 +77,15 @@ def retrieveDocuments(query, index, docw, queryw):
             docws[doc][token] = weighTerm(token, index, data, docw)
     query = {}
     for token in set(tokens):
+        if index.get(token) == None:
+            continue
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
     rank = []
     for doc in docs:
         sum = 0.0
         for token in set(tokens):
+            if index.get(token) == None:
+                continue
             sum += query[token] + docws[doc][token]
         rank.append([doc, sum])
     rank = sorted(rank, sortMostRelevant)
