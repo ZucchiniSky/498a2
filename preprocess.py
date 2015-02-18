@@ -15,6 +15,7 @@ numReg = "(([0-9]+[,.]?)*[0-9]+)"
 
 #generates the list of stopwords
 def generateStopwords():
+    global stopwords
     INFILE = open("stopwords")
     for line in INFILE:
         stopwords.append(line.strip())
