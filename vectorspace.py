@@ -17,7 +17,7 @@ def indexDocument(text, docw, queryw, index):
     uniquetokens = set(tokens)
     for token in uniquetokens:
         if index.get(token) == None:
-            index[token] = []
+            index[token] = [0, []]
         tokendata = index[token]
         tokendata[0] += 1
         tokendata[1].append([docid, tokens.count(token)])
