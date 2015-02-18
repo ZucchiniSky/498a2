@@ -93,7 +93,7 @@ def retrieveDocuments(query, index, docw, queryw):
         cosinequery = 0.0
         for token in query:
             cosinequery += query[token] * query[token]
-        cosinequery = math.sqrt(cosinedoc)
+        cosinequery = math.sqrt(cosinequery)
         cosinedoc = 0.0
         for token in docws[doc]:
             cosinedoc += docws[doc][token] * docws[doc][token]
