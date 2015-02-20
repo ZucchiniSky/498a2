@@ -9,7 +9,7 @@ from os import listdir
 from os.path import isfile, join
 
 docid = 0
-compare = 1
+compare = 0 #set this to 1 to compare the rankings with the given reljudge file
 judge = {}
 precsum10 = 0
 prectot10 = 0
@@ -88,7 +88,6 @@ def sortMostRelevant(x, y):
 def retrieveDocuments(query, index, docw, queryw):
     tokens = preprocess.processText(query)
     docs = set()
-    docstokens = {}
     for token in set(tokens):
         if index[0].get(token) is None:
             continue
@@ -199,6 +198,7 @@ def genJudge():
             judge[query] = set()
         judge[query].add(doc)
 
+#compares a ranking list with the reljudge list
 def comparePrecisionRecall(rank, query):
     global judge
     global precsum10
@@ -243,8 +243,9 @@ def comparePrecisionRecall(rank, query):
     precsum500 += precision / 500.0
     prectot500 += 1
 
-def runVecTfidx():
-    runVec("tfx", "tfx")
-
-def runVec(docw, queryw):
-    main([",", docw, queryw, "cranfieldDocs/", "cranfield.queries.test"])
+#test functions to make calling main more convenient
+#def runVecTfidx():
+#    runVec("tfx", "tfx")
+#
+#def runVec(docw, queryw):
+#    main([",", docw, queryw, "cranfieldDocs/", "cranfield.queries.test"])
