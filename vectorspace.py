@@ -18,10 +18,8 @@ def indexDocument(text, docw, queryw, index):
     for token in set(tokens):
         if index[0].get(token) == None:
             index[0][token] = []
-        if index[1][docid].get(token) == None:
-            index[1][docid][token] = 0
         index[0][token].append([docid, tokens.count(token)])
-        index[1][docid][token] += 1
+        index[1][docid][token] = tokens.count(token)
     return index
 
 def weighTermTop(token, index, data, wscheme):
