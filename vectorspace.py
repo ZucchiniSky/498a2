@@ -13,7 +13,7 @@ docid = 0
 def indexDocument(text, docw, queryw, index):
     global docid
     docid += 1
-    tokens = preprocess.tokenizeText(text)
+    tokens = preprocess.processText(text)
     index[1][docid] = {}
     for token in set(tokens):
         if index[0].get(token) == None:
@@ -63,7 +63,7 @@ def sortMostRelevant(x, y):
     return 1
 
 def retrieveDocuments(query, index, docw, queryw):
-    tokens = preprocess.tokenizeText(query)
+    tokens = preprocess.processText(query)
     docs = set()
     docstokens = {}
     for token in set(tokens):

@@ -23,7 +23,7 @@ def generateStopwords():
 
 #removes SGML tags from a text and replaces them with " "
 def removeSGML(text):
-    return " ".join(re.split("<.*>", text))
+    return " ".join(re.split("<.*?>", text))
 
 #returns true if the word does not contain a "." and is at least one char long
 def wordIsValid(word):
@@ -87,9 +87,7 @@ def removeStopwords(tokens):
 
 #stems a single word
 def stemWord(str):
-    print "unstemmed: " + str
     stemmer = PorterStemmer()
-    print "stemmed: " + stemmer.stem(str, 0, len(str)-1)
     return stemmer.stem(str, 0, len(str)-1)
 
 #stems a list of tokens
@@ -97,10 +95,7 @@ def stemWords(tokens):
     return [stemWord(token) for token in tokens]
 
 #processes and tokenizes a file
-def processFile(filename):
-    INFILE = open(filename)
-    text = INFILE.read()
-    INFILE.close()
+def processText(text):
     text = removeSGML(text)
     tokens = tokenizeText(text)
     tokens = removeStopwords(tokens)
