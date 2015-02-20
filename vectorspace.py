@@ -17,13 +17,11 @@ def indexDocument(text, docw, queryw, index):
     index[1][docid] = {}
     for token in set(tokens):
         if index[0].get(token) == None:
-            index[0][token] = [0, []]
+            index[0][token] = []
         if index[1][docid].get(token) == None:
             index[1][docid][token] = 0
-        tokendata = index[0][token]
-        tokendata[0] += 1
-        tokendata[1].append([docid, tokens.count(token)])
-        index[1][docid][token] = index[1][docid][token] + 1
+        index[0][token].append([docid, tokens.count(token)])
+        index[1][docid][token] += 1
     return index
 
 def weighTermTop(token, index, data, wscheme):
@@ -32,14 +30,14 @@ def weighTermTop(token, index, data, wscheme):
         w *= data
     if wscheme[0] == "n":
         maxtf = data
-        for i in range(0, index[0][token][0]):
-            if index[0][token][1][i][1] > maxtf:
-                maxtf = index[0][token][1][i][1]
+        for i in range(0, len(index[0][token])):
+            if index[0][token][i][1] > maxtf:
+                maxtf = index[0][token][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        w *= math.log(docid / index[0][token][0], 10)
+        w *= math.log(docid / len(index[0][token]), 10)
     if wscheme[1] == "p":
-        w *= math.log((docid - index[0][token][0]) / index[0][token][0], 10)
+        w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
     return w
 
 def weighTerm(token, index, data, wscheme):
@@ -48,8 +46,8 @@ def weighTerm(token, index, data, wscheme):
     w = weighTermTop(token, index, data, wscheme)
     if wscheme[2] == "c":
         sum = 0.0
-        for i in range(0, index[0][token][0]):
-            sum += weighTermTop(token, index, index[0][token][1][i][1], wscheme)
+        for i in range(0, len(index[0][token])):
+            sum += weighTermTop(token, index, index[0][token][i][1], wscheme)
         w /= math.sqrt(sum)
     return w
 
@@ -67,8 +65,8 @@ def retrieveDocuments(query, index, docw, queryw):
     for token in set(tokens):
         if index[0].get(token) == None:
             continue
-        for i in range(0, index[0][token][0]):
-            doc = index[0][token][1][i][0]
+        for i in range(0, len(index[0][token])):
+            doc = index[0][token][i][0]
             docs.add(doc)
             if docstokens.get(doc) == None:
                 docstokens[doc] = []
@@ -78,9 +76,9 @@ def retrieveDocuments(query, index, docw, queryw):
         docws[doc] = {}
         for token in docstokens[doc]:
             data = 0
-            for i in range(0, index[0][token][0]):
-                if index[0][token][1][i][0] == doc:
-                    data = index[0][token][1][i][1]
+            for i in range(0, len(index[0][token])):
+                if index[0][token][i][0] == doc:
+                    data = index[0][token][i][1]
             docws[doc][token] = weighTerm(token, index, data, docw)
     query = {}
     for token in set(tokens):
