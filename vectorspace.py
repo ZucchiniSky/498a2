@@ -94,7 +94,7 @@ def retrieveDocuments(query, index, docw, queryw):
         weight, query = weighTerm(token, index, tokens.count(token), queryw, queryFreq, query)
     cosinequery = 0.0
     for token in query[1]:
-        cosinequery += query[1][token] * query[1][token]
+        cosinequery += query[1][token][1] * query[1][token][1]
     cosinequery = math.sqrt(cosinequery)
     rank = []
     for doc in docs:
@@ -102,10 +102,10 @@ def retrieveDocuments(query, index, docw, queryw):
         for token in set(tokens):
             if index[2][doc].get(token) is None:
                 continue
-            weight += query[1][token] * index[2][doc][token]
+            weight += query[1][token][1] * index[2][doc][token][1]
         cosinedoc = 0.0
         for token in index[2][doc]:
-            cosinedoc += index[2][doc][token] * index[2][doc][token]
+            cosinedoc += index[2][doc][token][1] * index[2][doc][token][1]
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
             continue
