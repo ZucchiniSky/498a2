@@ -106,7 +106,7 @@ def retrieveDocuments(query, index, docw, queryw):
     num = 0
     for tuple in rank:
         print str(tuple[0])
-        print docws[doc]
+        print docws[tuple[0]]
         num += 1
         if num > 50:
             break
