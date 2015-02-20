@@ -44,15 +44,16 @@ def weighTermTop(token, index, data, wscheme):
             w *= math.log(docid - 1, 10)
     return w
 
-def weighTerm(token, index, data, wscheme):
+def weighTerm(token, index, data, wscheme, c):
     if wscheme == "tfidx":
         wscheme = "tfx"
     w = weighTermTop(token, index, data, wscheme)
     if wscheme[2] == "c" and index[0].get(token) != None:
-        sum = 0.0
-        for i in range(0, len(index[0][token])):
-            sum += weighTermTop(token, index, index[0][token][i][1], wscheme)
-        w /= math.sqrt(sum)
+        cosine = 0.0
+        for token in c:
+            termweight = weighTermTop(token, index, c[token], wscheme)
+            cosine += termweight * termweight
+        w /= math.sqrt(cosine)
     return w
 
 def sortMostRelevant(x, y):
@@ -83,10 +84,13 @@ def retrieveDocuments(query, index, docw, queryw):
             for i in range(0, len(index[0][token])):
                 if index[0][token][i][0] == doc:
                     data = index[0][token][i][1]
-            docws[doc][token] = weighTerm(token, index, data, docw)
+            docws[doc][token] = weighTerm(token, index, data, docw, index[1][doc])
     query = {}
+    queryFreq = {}
     for token in set(tokens):
-        query[token] = weighTerm(token, index, tokens.count(token), queryw)
+        queryFreq[token] = tokens.count(token)
+    for token in set(tokens):
+        query[token] = weighTerm(token, index, tokens.count(token), queryw, queryFreq)
     cosinequery = 0.0
     for token in query:
         cosinequery += query[token] * query[token]
@@ -104,7 +108,7 @@ def retrieveDocuments(query, index, docw, queryw):
             continue
         cosinedoc = 0.0
         for token in index[1][doc]:
-            termweight = weighTerm(token, index, index[1][doc][token], docw)
+            termweight = weighTerm(token, index, index[1][doc][token], docw, index[1][doc])
             cosinedoc += termweight * termweight
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
