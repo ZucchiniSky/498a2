@@ -96,7 +96,7 @@ def retrieveDocuments(query, index, docw, queryw):
             continue
         cosinequery = 0.0
         for token in set(tokens):
-            if index.get(token) == None or docws[doc].get(token) == None:
+            if index.get(token) == None or query.get(token) == None:
                 continue
             cosinequery += query[token] * query[token]
         cosinequery = math.sqrt(cosinequery)
