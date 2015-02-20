@@ -13,6 +13,7 @@ docid = 0
 def indexDocument(text, docw, queryw, index):
     global docid
     docid += 1
+    print docid
     tokens = preprocess.tokenizeText(text)
     for token in set(tokens):
         if index.get(token) == None:
