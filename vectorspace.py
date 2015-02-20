@@ -11,6 +11,10 @@ from os.path import isfile, join
 docid = 0
 compare = 1
 judge = {}
+precsum10 = 0
+precsum50 = 0
+precsum100 = 0
+precsum500 = 0
 
 def indexDocument(text, docw, queryw, index):
     global docid
@@ -146,6 +150,11 @@ def main(args):
             print str(i) + " " + str(data[0]) + " " + str(data[1])
         if compare == 1:
             comparePrecisionRecall(rank, i)
+    if compare == 1:
+        print "avg precision / 10 = " + str(precsum10 / docid)
+        print "avg precision / 50 = " + str(precsum50 / docid)
+        print "avg precision / 100 = " + str(precsum100 / docid)
+        print "avg precision / 500 = " + str(precsum500 / docid)
 
 #parses the test reljudge file
 def genJudge():
@@ -162,6 +171,10 @@ def genJudge():
 
 def comparePrecisionRecall(rank, query):
     global judge
+    global precsum10
+    global precsum50
+    global precsum100
+    global precsum500
     precision = 0
     for i in range(0, 10):
         if len(rank[i]) < i:
@@ -169,24 +182,28 @@ def comparePrecisionRecall(rank, query):
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 10 = " + str(precision / 10.0)
+    precsum10 += precision / 10.0
     for i in range(10, 50):
         if len(rank[i]) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 50 = " + str(precision / 50.0)
+    precsum50 += precision / 50.0
     for i in range(50, 100):
         if len(rank[i]) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 100 = " + str(precision / 100.0)
+    precsum100 += precision / 100.0
     for i in range(100, 500):
         if len(rank[i]) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 500 = " + str(precision / 500.0)
+    precsum500 += precision / 500.0
 
 def runVecTfidx():
     runVec("tfx", "tfx")
