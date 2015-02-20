@@ -10,6 +10,7 @@ from os.path import isfile, join
 
 docid = 0
 compare = 1
+judge = {}
 
 def indexDocument(text, docw, queryw, index):
     global docid
@@ -128,6 +129,8 @@ def main(args):
     docw = args[1]
     queryw = args[2]
     folder = args[3]
+    if compare == 1:
+        genJudge()
     files = [folder + filename for filename in listdir(folder) if isfile(join(folder, filename))]
     index = [{},{},{}]
     for filename in files:
@@ -142,28 +145,36 @@ def main(args):
         for data in rank:
             print str(i) + " " + str(data[0]) + " " + str(data[1])
         if compare == 1:
-            comparePrecisionRecall(rank)
+            comparePrecisionRecall(rank, i)
 
-def comparePrecisionRecall(rank):
-    precision = 0
+#parses the test reljudge file
+def genJudge():
+    global judge
     judgein = open("cranfield.reljudge.test")
-    judge = set()
     for line in judgein:
-        judge.add(line.strip())
+        list = line.split(" ")
+        if judge.get(list[0]) is None:
+            judge[list[0]] = set()
+        judge[list[0]].add(list[1])
+    print judge
+
+def comparePrecisionRecall(rank, i):
+    global judge
+    precision = 0
     for i in range(0, 10):
-        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+        if rank[i][0] in judge[i]:
             precision += 1
     print "precision / 10 = " + str(precision / 10.0)
     for i in range(10, 50):
-        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+        if rank[i][0] in judge[i]:
             precision += 1
     print "precision / 50 = " + str(precision / 50.0)
     for i in range(50, 100):
-        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+        if rank[i][0] in judge[i]:
             precision += 1
     print "precision / 100 = " + str(precision / 100.0)
     for i in range(100, 500):
-        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+        if rank[i][0] in judge[i]:
             precision += 1
     print "precision / 500 = " + str(precision / 500.0)
 
