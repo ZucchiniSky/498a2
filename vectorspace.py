@@ -33,9 +33,9 @@ def weighTermTop(token, index, data, wscheme):
                 maxtf = index[token][1][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        w *= math.log(docid / index[token][0], 2)
+        w *= math.log(docid / index[token][0], 10)
     if wscheme[1] == "p":
-        w *= math.log((docid - index[token][0]) / index[token][0], 2)
+        w *= math.log((docid - index[token][0]) / index[token][0], 10)
     return w
 
 def weighTerm(token, index, data, wscheme):
