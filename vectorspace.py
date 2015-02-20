@@ -9,6 +9,7 @@ from os import listdir
 from os.path import isfile, join
 
 docid = 0
+compare = 1
 
 def indexDocument(text, docw, queryw, index):
     global docid
@@ -26,7 +27,8 @@ def indexDocument(text, docw, queryw, index):
             index[2][docid][0] = count
     return index
 
-def weighTermTop(token, index, data, wscheme, c, memory):
+#weighs the top of a term in a document given data and index
+def weighTermTop(token, index, data, wscheme, memory):
     w = 1.0
     if memory[1].get(token) is not None:
         return memory[1][token][0], memory
@@ -48,21 +50,23 @@ def weighTermTop(token, index, data, wscheme, c, memory):
     memory[1][token].append(w)
     return w, memory
 
+#weighs the top of a term in a document given data and index
 def weighTerm(token, index, data, wscheme, c, memory):
     if wscheme == "tfidx":
         wscheme = "tfx"
     if memory[1].get(token) is not None and len(memory[1][token]) == 2:
         return memory[1][token][1], memory
-    w, memory = weighTermTop(token, index, data, wscheme, c, memory)
+    w, memory = weighTermTop(token, index, data, wscheme, memory)
     if wscheme[2] == "c" and index[0].get(token) is not None:
         cosine = 0.0
         for othertoken in c:
-            termweight, memory = weighTermTop(othertoken, index, c[othertoken], wscheme, c, memory)
+            termweight, memory = weighTermTop(othertoken, index, c[othertoken], wscheme, memory)
             cosine += termweight * termweight
         w /= math.sqrt(cosine)
     memory[1][token].append(w)
     return w, memory
 
+#sorts document rank tuples by the most relevant
 def sortMostRelevant(x, y):
     if x[1] == y[1]:
         return 0
@@ -118,6 +122,7 @@ def main(args):
     if len(args) != 5:
         print "incorrect command line arguments"
     global docid
+    global compare
     docid = 0
     preprocess.generateStopwords()
     docw = args[1]
@@ -133,8 +138,30 @@ def main(args):
     i = 0
     for line in queryin:
         i += 1
-        for data in retrieveDocuments(line, index, docw, queryw):
+        rank = retrieveDocuments(line, index, docw, queryw)
+        for data in rank:
             print str(i) + " " + str(data[0]) + " " + str(data[1])
+        if compare == 1:
+            comparePrecisionRecall(rank)
+
+def comparePrecisionRecall(rank):
+    precision = 0
+    judgein = open("cranfield.reljudge.test")
+    judge = set()
+    for line in judgein:
+        judge.add(line.strip())
+    for i in range(0, 10):
+        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+            precision += 1
+    print "precision / 10 = " + str(precision / 10.0)
+    for i in range(10, 50):
+        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+            precision += 1
+    print "precision / 50 = " + str(precision / 50.0)
+    for i in range(50, 100):
+        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+            precision += 1
+    print "precision / 100 = " + str(precision / 100.0)
 
 def runVecTfidx():
     runVec("tfx", "tfx")
