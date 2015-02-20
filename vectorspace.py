@@ -15,6 +15,7 @@ def indexDocument(text, docw, queryw, index):
     docid += 1
     tokens = preprocess.processText(text)
     index[1][docid] = {}
+    index[2][docid] = {}
     for token in set(tokens):
         if index[0].get(token) == None:
             index[0][token] = []
@@ -22,10 +23,17 @@ def indexDocument(text, docw, queryw, index):
         index[1][docid][token] = tokens.count(token)
     return index
 
-def weighTermTop(token, index, data, wscheme):
+def weighTermTop(token, index, data, wscheme, c, memory):
     w = 1.0
+    if memory.get(token) != None:
+        return memory[token][0]
     if wscheme[0] == "t":
         w *= data
+        maxtf = data
+        for token in c:
+            if c[token] > maxtf:
+                maxtf = c[token]
+        w /= maxtf
     if wscheme[0] == "n":
         maxtf = data
         for i in range(0, len(index[0][token])):
@@ -42,18 +50,23 @@ def weighTermTop(token, index, data, wscheme):
             w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
         else:
             w *= math.log(docid - 1, 10)
+    memory[token] = []
+    memory[token].append(w)
     return w
 
-def weighTerm(token, index, data, wscheme, c):
+def weighTerm(token, index, data, wscheme, c, memory):
     if wscheme == "tfidx":
         wscheme = "tfx"
-    w = weighTermTop(token, index, data, wscheme)
+    if memory.get(token) != None and len(memory[token]) == 2:
+        return memory[token][1]
+    w = weighTermTop(token, index, data, wscheme, c, memory)
     if wscheme[2] == "c" and index[0].get(token) != None:
         cosine = 0.0
         for token in c:
-            termweight = weighTermTop(token, index, c[token], wscheme)
+            termweight = weighTermTop(token, index, c[token], wscheme, c, memory)
             cosine += termweight * termweight
         w /= math.sqrt(cosine)
+    memory[token].append(w)
     return w
 
 def sortMostRelevant(x, y):
@@ -73,24 +86,15 @@ def retrieveDocuments(query, index, docw, queryw):
         for i in range(0, len(index[0][token])):
             doc = index[0][token][i][0]
             docs.add(doc)
-            if docstokens.get(doc) == None:
-                docstokens[doc] = []
-            docstokens[doc].append(token)
-    docws = {}
     for doc in docs:
-        docws[doc] = {}
-        for token in docstokens[doc]:
-            data = 0
-            for i in range(0, len(index[0][token])):
-                if index[0][token][i][0] == doc:
-                    data = index[0][token][i][1]
-            docws[doc][token] = weighTerm(token, index, data, docw, index[1][doc])
+        for token in index[1][doc]:
+            weighTerm(token, index, index[1][doc][token], docw, index[1][doc], index[2][doc])
     query = {}
     queryFreq = {}
     for token in set(tokens):
         queryFreq[token] = tokens.count(token)
     for token in set(tokens):
-        query[token] = weighTerm(token, index, tokens.count(token), queryw, queryFreq)
+        weighTerm(token, index, tokens.count(token), queryw, queryFreq, query)
     cosinequery = 0.0
     for token in query:
         cosinequery += query[token] * query[token]
@@ -98,22 +102,17 @@ def retrieveDocuments(query, index, docw, queryw):
     rank = []
     for doc in docs:
         weight = 0.0
-        found = 0
         for token in set(tokens):
-            if docws[doc].get(token) == None:
+            if index[2][doc].get(token) == None:
                 continue
-            found = 1
-            weight += query[token] * docws[doc][token]
-        if found == 0:
-            continue
+            weight += query[token] * index[2][doc][token]
         cosinedoc = 0.0
-        for token in index[1][doc]:
-            termweight = weighTerm(token, index, index[1][doc][token], docw, index[1][doc])
-            cosinedoc += termweight * termweight
+        for token in index[2][doc]:
+            cosinedoc += index[2][doc][token] * index[2][doc][token]
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
             continue
-        weight = weight / (cosinedoc * cosinequery)
+        weight /= (cosinedoc * cosinequery)
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     return rank
@@ -121,6 +120,9 @@ def retrieveDocuments(query, index, docw, queryw):
 def main(args):
     if len(args) != 5:
         print "incorrect command line arguments"
+    global docid
+    docid = 0
+    preprocess.generateStopwords()
     docw = args[1]
     queryw = args[2]
     folder = args[3]
