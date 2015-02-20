@@ -100,12 +100,12 @@ def retrieveDocuments(query, index, docw, queryw):
     for doc in docs:
         weight = 0.0
         for token in set(tokens):
-            if index[2][doc].get(token) is None:
+            if index[2][doc][1].get(token) is None:
                 continue
-            weight += query[1][token][1] * index[2][doc][token][1]
+            weight += query[1][token][1] * index[2][doc][1][token][1]
         cosinedoc = 0.0
         for token in index[2][doc]:
-            cosinedoc += index[2][doc][token][1] * index[2][doc][token][1]
+            cosinedoc += index[2][doc][1][token][1] * index[2][doc][1][token][1]
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
             continue
