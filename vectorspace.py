@@ -66,8 +66,8 @@ def weighTerm(token, index, data, wscheme, c, memory):
     w, memory = weighTermTop(token, index, data, wscheme, c, memory)
     if wscheme[2] == "c" and index[0].get(token) is not None:
         cosine = 0.0
-        for token in c:
-            termweight, memory = weighTermTop(token, index, c[token], wscheme, c, memory)
+        for othertoken in c:
+            termweight, memory = weighTermTop(othertoken, index, c[othertoken], wscheme, c, memory)
             cosine += termweight * termweight
         w /= math.sqrt(cosine)
     print "after term top memory is "
