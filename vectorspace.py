@@ -84,30 +84,28 @@ def retrieveDocuments(query, index, docw, queryw):
             docws[doc][token] = weighTerm(token, index, data, docw)
     query = {}
     for token in set(tokens):
-        if index[0].get(token) == None:
-            continue
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
+    cosinequery = 0.0
+    for token in query:
+        cosinequery += query[token] * query[token]
+    cosinequery = math.sqrt(cosinequery)
     rank = []
     for doc in docs:
         weight = 0.0
         found = 0
         for token in set(tokens):
-            if index[0].get(token) == None or docws[doc].get(token) == None:
+            if docws[doc].get(token) == None:
                 continue
             found = 1
             weight += query[token] * docws[doc][token]
         if found == 0:
             continue
-        cosinequery = 0.0
-        for token in query:
-            cosinequery += query[token] * query[token]
-        cosinequery = math.sqrt(cosinequery)
         cosinedoc = 0.0
         for token in index[1][doc]:
             termweight = weighTerm(token, index, index[1][doc][token], docw)
             cosinedoc += termweight * termweight
         cosinedoc = math.sqrt(cosinedoc)
-        if cosinedoc == 0 or cosinequery == 0:
+        if cosinedoc == 0:
             continue
         weight = weight / (cosinedoc * cosinequery)
         rank.append([doc, weight])
@@ -118,6 +116,7 @@ def retrieveDocuments(query, index, docw, queryw):
     for tuple in rank:
         print str(tuple[0]) + " " + str(tuple[1])
         print docws[tuple[0]]
+        print index[1][tuple[0]]
         num += 1
         if num > 50:
             break
