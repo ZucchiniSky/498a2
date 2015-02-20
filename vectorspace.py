@@ -103,9 +103,7 @@ def retrieveDocuments(query, index, docw, queryw):
         if found == 0:
             continue
         cosinedoc = 0.0
-        for token in set(tokens):
-            if index[1][doc].get(token) == None:
-                continue
+        for token in index[1][doc]:
             termweight = weighTerm(token, index, index[1][doc][token], docw)
             cosinedoc += termweight * termweight
         cosinedoc = math.sqrt(cosinedoc)
@@ -120,7 +118,6 @@ def retrieveDocuments(query, index, docw, queryw):
     for tuple in rank:
         print str(tuple[0]) + " " + str(tuple[1])
         print docws[tuple[0]]
-        print index[1][tuple[0]]
         num += 1
         if num > 50:
             break
