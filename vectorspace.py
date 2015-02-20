@@ -109,7 +109,7 @@ def retrieveDocuments(query, index, docw, queryw):
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
             continue
-        weight = weight / (cosinedoc * cosinequery)
+        #weight = weight / (cosinedoc * cosinequery)
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     num = 0
