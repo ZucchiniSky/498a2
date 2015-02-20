@@ -15,31 +15,25 @@ def indexDocument(text, docw, queryw, index):
     docid += 1
     tokens = preprocess.processText(text)
     index[1][docid] = {}
-    index[2][docid] = {}
+    index[2][docid] = [0, {}]
     for token in set(tokens):
         if index[0].get(token) is None:
             index[0][token] = []
-        index[0][token].append([docid, tokens.count(token)])
-        index[1][docid][token] = tokens.count(token)
+        count = tokens.count(token)
+        index[0][token].append([docid, count])
+        index[1][docid][1][token] = count
+        if count > index[1][docid][0]:
+            index[1][docid][0] = count
     return index
 
 def weighTermTop(token, index, data, wscheme, c, memory):
     w = 1.0
-    if memory.get(token) is not None:
-        return memory[token][0], memory
+    if memory[1].get(token) is not None:
+        return memory[1][token][0], memory
     if wscheme[0] == "t":
         w *= data
-        maxtf = data
-        for othertoken in c:
-            if c[othertoken] > maxtf:
-                maxtf = c[othertoken]
-        w /= maxtf
     if wscheme[0] == "n":
-        maxtf = data
-        for i in range(0, len(index[0][token])):
-            if index[0][token][i][1] > maxtf:
-                maxtf = index[0][token][i][1]
-        w = .5 + .5 * data / maxtf
+        w = .5 + .5 * data / memory[0]
     if wscheme[1] == "f":
         if index[0].get(token) is not None:
             w *= math.log(docid / len(index[0][token]), 10)
@@ -50,21 +44,15 @@ def weighTermTop(token, index, data, wscheme, c, memory):
             w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
         else:
             w *= math.log(docid - 1, 10)
-    memory[token] = []
-    memory[token].append(w)
-    print "term top memory is "
-    print memory
-    print token
+    memory[1][token] = []
+    memory[1][token].append(w)
     return w, memory
 
 def weighTerm(token, index, data, wscheme, c, memory):
     if wscheme == "tfidx":
         wscheme = "tfx"
-    print "term memory is "
-    print memory
-    print token
-    if memory.get(token) is not None and len(memory[token]) == 2:
-        return memory[token][1], memory
+    if memory[1].get(token) is not None and len(memory[1][token]) == 2:
+        return memory[1][token][1], memory
     w, memory = weighTermTop(token, index, data, wscheme, c, memory)
     if wscheme[2] == "c" and index[0].get(token) is not None:
         cosine = 0.0
@@ -72,10 +60,7 @@ def weighTerm(token, index, data, wscheme, c, memory):
             termweight, memory = weighTermTop(othertoken, index, c[othertoken], wscheme, c, memory)
             cosine += termweight * termweight
         w /= math.sqrt(cosine)
-    print "after term top memory is "
-    print memory
-    print token
-    memory[token].append(w)
+    memory[1][token].append(w)
     return w, memory
 
 def sortMostRelevant(x, y):
@@ -98,10 +83,13 @@ def retrieveDocuments(query, index, docw, queryw):
     for doc in docs:
         for token in index[1][doc]:
             weight, index[2][doc] = weighTerm(token, index, index[1][doc][token], docw, index[1][doc], index[2][doc])
-    query = {}
+    query = [0, {}]
     queryFreq = {}
     for token in set(tokens):
-        queryFreq[token] = tokens.count(token)
+        count = tokens.count(token)
+        queryFreq[token] = count
+        if count > query[0]:
+            query[0] = count
     for token in set(tokens):
         weight, query = weighTerm(token, index, tokens.count(token), queryw, queryFreq, query)
     cosinequery = 0.0
