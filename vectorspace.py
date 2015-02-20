@@ -17,7 +17,7 @@ def indexDocument(text, docw, queryw, index):
     index[1][docid] = {}
     index[2][docid] = {}
     for token in set(tokens):
-        if index[0].get(token) == None:
+        if index[0].get(token) is None:
             index[0][token] = []
         index[0][token].append([docid, tokens.count(token)])
         index[1][docid][token] = tokens.count(token)
@@ -25,7 +25,7 @@ def indexDocument(text, docw, queryw, index):
 
 def weighTermTop(token, index, data, wscheme, c, memory):
     w = 1.0
-    if memory.get(token) != None:
+    if memory.get(token) is not None:
         return memory[token][0], memory
     if wscheme[0] == "t":
         w *= data
@@ -41,12 +41,12 @@ def weighTermTop(token, index, data, wscheme, c, memory):
                 maxtf = index[0][token][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        if index[0].get(token) != None:
+        if index[0].get(token) is not None:
             w *= math.log(docid / len(index[0][token]), 10)
         else:
             w *= math.log(docid, 10)
     if wscheme[1] == "p":
-        if index[0].get(token) != None:
+        if index[0].get(token) is not None:
             w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
         else:
             w *= math.log(docid - 1, 10)
@@ -57,10 +57,12 @@ def weighTermTop(token, index, data, wscheme, c, memory):
 def weighTerm(token, index, data, wscheme, c, memory):
     if wscheme == "tfidx":
         wscheme = "tfx"
-    if memory.get(token) != None and len(memory[token]) == 2:
+    print "memory is "
+    print memory
+    if memory.get(token) is not None and len(memory[token]) == 2:
         return memory[token][1], memory
     w, memory = weighTermTop(token, index, data, wscheme, c, memory)
-    if wscheme[2] == "c" and index[0].get(token) != None:
+    if wscheme[2] == "c" and index[0].get(token) is not None:
         cosine = 0.0
         for token in c:
             termweight, memory = weighTermTop(token, index, c[token], wscheme, c, memory)
@@ -81,7 +83,7 @@ def retrieveDocuments(query, index, docw, queryw):
     docs = set()
     docstokens = {}
     for token in set(tokens):
-        if index[0].get(token) == None:
+        if index[0].get(token) is None:
             continue
         for i in range(0, len(index[0][token])):
             doc = index[0][token][i][0]
@@ -103,7 +105,7 @@ def retrieveDocuments(query, index, docw, queryw):
     for doc in docs:
         weight = 0.0
         for token in set(tokens):
-            if index[2][doc].get(token) == None:
+            if index[2][doc].get(token) is None:
                 continue
             weight += query[token] * index[2][doc][token]
         cosinedoc = 0.0
