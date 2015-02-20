@@ -35,16 +35,22 @@ def weighTermTop(token, index, data, wscheme):
                 maxtf = index[0][token][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        w *= math.log(docid / len(index[0][token]), 10)
+        if index[0].get(token) != None:
+            w *= math.log(docid / len(index[0][token]), 10)
+        else:
+            w *= math.log(docid, 10)
     if wscheme[1] == "p":
-        w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
+        if index[0].get(token) != None:
+            w *= math.log((docid - len(index[0][token])) / len(index[0][token]), 10)
+        else:
+            w *= math.log(docid - 1, 10)
     return w
 
 def weighTerm(token, index, data, wscheme):
     if wscheme == "tfidx":
         wscheme = "tfx"
     w = weighTermTop(token, index, data, wscheme)
-    if wscheme[2] == "c":
+    if wscheme[2] == "c" and index[0].get(token) != None:
         sum = 0.0
         for i in range(0, len(index[0][token])):
             sum += weighTermTop(token, index, index[0][token][i][1], wscheme)
