@@ -86,21 +86,25 @@ def retrieveDocuments(query, index, docw, queryw):
     rank = []
     for doc in docs:
         weight = 0.0
+        found = 0
         for token in set(tokens):
             if index.get(token) == None or docws[doc].get(token) == None:
                 continue
+            found = 1
             weight += query[token] * docws[doc][token]
-        cosinequery = 0.0
-        for token in query:
-            cosinequery += query[token] * query[token]
-        cosinequery = math.sqrt(cosinequery)
-        cosinedoc = 0.0
-        for token in docws[doc]:
-            cosinedoc += docws[doc][token] * docws[doc][token]
-        cosinedoc = math.sqrt(cosinedoc)
-        if cosinedoc == 0 or cosinequery == 0:
+        if found == 0:
             continue
-        weight = weight / (cosinedoc * cosinequery)
+        #cosinequery = 0.0
+        #for token in query:
+        #    cosinequery += query[token] * query[token]
+        #cosinequery = math.sqrt(cosinequery)
+        #cosinedoc = 0.0
+        #for token in docws[doc]:
+        #    cosinedoc += docws[doc][token] * docws[doc][token]
+        #cosinedoc = math.sqrt(cosinedoc)
+        #if cosinedoc == 0 or cosinequery == 0:
+        #    continue
+        #weight = weight / (cosinedoc * cosinequery)
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     num = 0
