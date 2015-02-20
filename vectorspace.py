@@ -127,7 +127,7 @@ def main(args):
     queryw = args[2]
     folder = args[3]
     files = [folder + filename for filename in listdir(folder) if isfile(join(folder, filename))]
-    index = [{},{}]
+    index = [{},{},{}]
     for filename in files:
         filein = open(filename)
         index = indexDocument(filein.read(), docw, queryw, index)
