@@ -14,12 +14,16 @@ def indexDocument(text, docw, queryw, index):
     global docid
     docid += 1
     tokens = preprocess.tokenizeText(text)
+    index[1][docid] = {}
     for token in set(tokens):
-        if index.get(token) == None:
-            index[token] = [0, []]
-        tokendata = index[token]
+        if index[0].get(token) == None:
+            index[0][token] = [0, []]
+        if index[1][docid].get(token) == None:
+            index[1][docid][token] = 0
+        tokendata = index[0][token]
         tokendata[0] += 1
         tokendata[1].append([docid, tokens.count(token)])
+        index[1][docid][token] = index[1][docid][token] + 1
     return index
 
 def weighTermTop(token, index, data, wscheme):
@@ -28,14 +32,14 @@ def weighTermTop(token, index, data, wscheme):
         w *= data
     if wscheme[0] == "n":
         maxtf = data
-        for i in range(0, index[token][0]):
-            if index[token][1][i][1] > maxtf:
-                maxtf = index[token][1][i][1]
+        for i in range(0, index[0][token][0]):
+            if index[0][token][1][i][1] > maxtf:
+                maxtf = index[0][token][1][i][1]
         w = .5 + .5 * data / maxtf
     if wscheme[1] == "f":
-        w *= math.log(docid / index[token][0], 10)
+        w *= math.log(docid / index[0][token][0], 10)
     if wscheme[1] == "p":
-        w *= math.log((docid - index[token][0]) / index[token][0], 10)
+        w *= math.log((docid - index[0][token][0]) / index[0][token][0], 10)
     return w
 
 def weighTerm(token, index, data, wscheme):
@@ -44,8 +48,8 @@ def weighTerm(token, index, data, wscheme):
     w = weighTermTop(token, index, data, wscheme)
     if wscheme[2] == "c":
         sum = 0.0
-        for i in range(0, index[token][0]):
-            sum += weighTermTop(token, index, index[token][1][i][1], wscheme)
+        for i in range(0, index[0][token][0]):
+            sum += weighTermTop(token, index, index[0][token][1][i][1], wscheme)
         w /= math.sqrt(sum)
     return w
 
@@ -74,13 +78,13 @@ def retrieveDocuments(query, index, docw, queryw):
         docws[doc] = {}
         for token in docstokens[doc]:
             data = 0
-            for i in range(0, index[token][0]):
-                if index[token][1][i][0] == doc:
-                    data = index[token][1][i][1]
+            for i in range(0, index[0][token][0]):
+                if index[0][token][1][i][0] == doc:
+                    data = index[0][token][1][i][1]
             docws[doc][token] = weighTerm(token, index, data, docw)
     query = {}
     for token in set(tokens):
-        if index.get(token) == None:
+        if index[0].get(token) == None:
             continue
         query[token] = weighTerm(token, index, tokens.count(token), queryw)
     rank = []
@@ -88,23 +92,20 @@ def retrieveDocuments(query, index, docw, queryw):
         weight = 0.0
         found = 0
         for token in set(tokens):
-            if index.get(token) == None or docws[doc].get(token) == None:
+            if index[0].get(token) == None or docws[doc].get(token) == None:
                 continue
             found = 1
             weight += query[token] * docws[doc][token]
         if found == 0:
             continue
         cosinequery = 0.0
-        for token in set(tokens):
-            if index.get(token) == None or query.get(token) == None:
-                continue
+        for token in query:
             cosinequery += query[token] * query[token]
         cosinequery = math.sqrt(cosinequery)
         cosinedoc = 0.0
-        for token in set(tokens):
-            if index.get(token) == None or docws[doc].get(token) == None:
-                continue
-            cosinedoc += docws[doc][token] * docws[doc][token]
+        for token in index[1][doc]:
+            termweight = weighTerm(token, index, index[1][doc][token], docw)
+            cosinedoc += termweight * termweight
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0 or cosinequery == 0:
             continue
@@ -129,7 +130,7 @@ def main(args):
     queryw = args[2]
     folder = args[3]
     files = [folder + filename for filename in listdir(folder) if isfile(join(folder, filename))]
-    index = {}
+    index = [{},{}]
     for filename in files:
         filein = open(filename)
         index = indexDocument(filein.read(), docw, queryw, index)
