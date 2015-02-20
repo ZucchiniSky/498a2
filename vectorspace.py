@@ -164,18 +164,26 @@ def comparePrecisionRecall(rank, query):
     global judge
     precision = 0
     for i in range(0, 10):
+        if len(rank[i]) < i:
+            return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 10 = " + str(precision / 10.0)
     for i in range(10, 50):
+        if len(rank[i]) < i:
+            return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 50 = " + str(precision / 50.0)
     for i in range(50, 100):
+        if len(rank[i]) < i:
+            return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 100 = " + str(precision / 100.0)
     for i in range(100, 500):
+        if len(rank[i]) < i:
+            return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 500 = " + str(precision / 500.0)
