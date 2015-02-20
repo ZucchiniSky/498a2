@@ -162,6 +162,10 @@ def comparePrecisionRecall(rank):
         if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
             precision += 1
     print "precision / 100 = " + str(precision / 100.0)
+    for i in range(100, 500):
+        if str(rank[i][0]) + " " + str(rank[i][1]) in judge:
+            precision += 1
+    print "precision / 500 = " + str(precision / 500.0)
 
 def runVecTfidx():
     runVec("tfx", "tfx")
