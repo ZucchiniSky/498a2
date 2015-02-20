@@ -104,7 +104,7 @@ def retrieveDocuments(query, index, docw, queryw):
                 continue
             weight += query[1][token][1] * index[2][doc][1][token][1]
         cosinedoc = 0.0
-        for token in index[2][doc]:
+        for token in index[2][doc][1]:
             cosinedoc += index[2][doc][1][token][1] * index[2][doc][1][token][1]
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
