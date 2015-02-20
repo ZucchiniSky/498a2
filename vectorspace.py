@@ -53,7 +53,7 @@ def weighTermTop(token, index, data, wscheme, memory):
     if wscheme[1] == "p":
         if index[0].get(token) is not None and docid > len(index[0][token]):
             w *= math.log(float(docid - len(index[0][token])) / len(index[0][token]), 10)
-        elif docid > len(index[0][token]):
+        elif index[0].get(token) is None:
             w *= math.log(docid - 1, 10)
         else:
             w = 0
