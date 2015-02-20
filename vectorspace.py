@@ -10,6 +10,7 @@ from os.path import isfile, join
 
 docid = 0
 compare = 0 #set this to 1 to compare the rankings with the given reljudge file
+#the following globals are only used if compare == 1
 judge = {}
 precsum10 = 0
 prectot10 = 0
