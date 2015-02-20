@@ -105,7 +105,6 @@ def retrieveDocuments(query, index, docw, queryw):
     rank = sorted(rank, sortMostRelevant)
     for tuple in rank:
         print str(tuple[0])
-        print docstokens[doc]
         print docws[doc]
     return rank
 
