@@ -104,8 +104,10 @@ def retrieveDocuments(query, index, docw, queryw):
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     num = 0
+    print str(0)
+    print query
     for tuple in rank:
-        print str(tuple[0])
+        print str(tuple[0]) + " " + str(tuple[1])
         print docws[tuple[0]]
         num += 1
         if num > 50:
