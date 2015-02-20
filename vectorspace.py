@@ -30,9 +30,9 @@ def weighTermTop(token, index, data, wscheme, c, memory):
     if wscheme[0] == "t":
         w *= data
         maxtf = data
-        for token in c:
-            if c[token] > maxtf:
-                maxtf = c[token]
+        for othertoken in c:
+            if c[othertoken] > maxtf:
+                maxtf = c[othertoken]
         w /= maxtf
     if wscheme[0] == "n":
         maxtf = data
