@@ -26,7 +26,7 @@ def indexDocument(text, docw, queryw, index):
 def weighTermTop(token, index, data, wscheme, c, memory):
     w = 1.0
     if memory.get(token) != None:
-        return memory[token][0]
+        return memory[token][0], memory
     if wscheme[0] == "t":
         w *= data
         maxtf = data
@@ -52,22 +52,22 @@ def weighTermTop(token, index, data, wscheme, c, memory):
             w *= math.log(docid - 1, 10)
     memory[token] = []
     memory[token].append(w)
-    return w
+    return w, memory
 
 def weighTerm(token, index, data, wscheme, c, memory):
     if wscheme == "tfidx":
         wscheme = "tfx"
     if memory.get(token) != None and len(memory[token]) == 2:
-        return memory[token][1]
-    w = weighTermTop(token, index, data, wscheme, c, memory)
+        return memory[token][1], memory
+    w, memory = weighTermTop(token, index, data, wscheme, c, memory)
     if wscheme[2] == "c" and index[0].get(token) != None:
         cosine = 0.0
         for token in c:
-            termweight = weighTermTop(token, index, c[token], wscheme, c, memory)
+            termweight, memory = weighTermTop(token, index, c[token], wscheme, c, memory)
             cosine += termweight * termweight
         w /= math.sqrt(cosine)
     memory[token].append(w)
-    return w
+    return w, memory
 
 def sortMostRelevant(x, y):
     if x[1] == y[1]:
@@ -88,13 +88,13 @@ def retrieveDocuments(query, index, docw, queryw):
             docs.add(doc)
     for doc in docs:
         for token in index[1][doc]:
-            weighTerm(token, index, index[1][doc][token], docw, index[1][doc], index[2][doc])
+            weight, index[2][doc] = weighTerm(token, index, index[1][doc][token], docw, index[1][doc], index[2][doc])
     query = {}
     queryFreq = {}
     for token in set(tokens):
         queryFreq[token] = tokens.count(token)
     for token in set(tokens):
-        weighTerm(token, index, tokens.count(token), queryw, queryFreq, query)
+        weight, query = weighTerm(token, index, tokens.count(token), queryw, queryFreq, query)
     cosinequery = 0.0
     for token in query:
         cosinequery += query[token] * query[token]
