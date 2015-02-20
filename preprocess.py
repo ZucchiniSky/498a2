@@ -9,7 +9,7 @@ from porterstemmer import PorterStemmer
 stopwords = []
 dateMonth = "([jJ]an|[jJ]anuary|[fF]eb|[fF]ebruary|[mM]ar|[mM]arch|[aA]pr|[aA]pril|[mM]ay|[jJ]un|[jJ]une|[jJ]ul|[jJ]uly|[aA]ug|[aA]ugust|[sS]ep|[sS]eptember|[oO]ct|[oO]ctober|[nN]ov|[nN]ovember|[dD]ec|[dD]ecember|1[012]|0?[1-9])"
 dateDay = "(0?[1-9]|[1-2][0-9]|3[0-1])"
-dateYear = "[1-9][0-9]*"
+dateYear = "[0-9]*"
 dateReg = "(" + dateMonth + "[- ]" + dateDay + "[- ,]" + dateYear + ")"
 numReg = "(([0-9]+[,.]?)*[0-9]+)"
 
@@ -18,7 +18,7 @@ def generateStopwords():
     global stopwords
     INFILE = open("stopwords")
     for line in INFILE:
-        stopwords.append(line.strip())
+        stopwords.append(line.strip().lower())
     INFILE.close()
 
 #removes SGML tags from a text and replaces them with " "
@@ -37,7 +37,8 @@ def tokenizeText(text):
     text = " ".join(re.split("[0-9]", text))
     tokens = re.split("[\s,;!?()/]*", text)
     newTokens = []
-    for token in tokens:
+    for puretoken in tokens:
+        token = puretoken.lower()
         if re.match(".*n't$", token):
             newTokens.append("not")
             newTokens.append("".join(re.split("n't$", token)))
