@@ -151,10 +151,10 @@ def main(args):
         if compare == 1:
             comparePrecisionRecall(rank, i)
     if compare == 1:
-        print "avg precision / 10 = " + str(precsum10 / docid)
-        print "avg precision / 50 = " + str(precsum50 / docid)
-        print "avg precision / 100 = " + str(precsum100 / docid)
-        print "avg precision / 500 = " + str(precsum500 / docid)
+        print "avg precision / 10 = " + str(precsum10 / i)
+        print "avg precision / 50 = " + str(precsum50 / i)
+        print "avg precision / 100 = " + str(precsum100 / i)
+        print "avg precision / 500 = " + str(precsum500 / i)
 
 #parses the test reljudge file
 def genJudge():
