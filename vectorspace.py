@@ -167,7 +167,6 @@ def genJudge():
         if judge.get(query) is None:
             judge[query] = set()
         judge[query].add(doc)
-    print judge
 
 def comparePrecisionRecall(rank, query):
     global judge
@@ -177,28 +176,28 @@ def comparePrecisionRecall(rank, query):
     global precsum500
     precision = 0
     for i in range(0, 10):
-        if len(rank[i]) < i:
+        if len(rank) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 10 = " + str(precision / 10.0)
     precsum10 += precision / 10.0
     for i in range(10, 50):
-        if len(rank[i]) < i:
+        if len(rank) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 50 = " + str(precision / 50.0)
     precsum50 += precision / 50.0
     for i in range(50, 100):
-        if len(rank[i]) < i:
+        if len(rank) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
     print "precision / 100 = " + str(precision / 100.0)
     precsum100 += precision / 100.0
     for i in range(100, 500):
-        if len(rank[i]) < i:
+        if len(rank) < i:
             return
         if rank[i][0] in judge[query]:
             precision += 1
