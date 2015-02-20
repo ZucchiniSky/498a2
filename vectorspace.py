@@ -103,6 +103,10 @@ def retrieveDocuments(query, index, docw, queryw):
         weight = weight / (cosinedoc * cosinequery)
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
+    for tuple in rank:
+        print str(tuple[0])
+        print docstokens[doc]
+        print docws[doc]
     return rank
 
 def main(args):
