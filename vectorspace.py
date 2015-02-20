@@ -103,13 +103,15 @@ def retrieveDocuments(query, index, docw, queryw):
         if found == 0:
             continue
         cosinedoc = 0.0
-        for token in index[1][doc]:
+        for token in set(tokens):
+            if index[1][doc].get(token) == None:
+                continue
             termweight = weighTerm(token, index, index[1][doc][token], docw)
             cosinedoc += termweight * termweight
         cosinedoc = math.sqrt(cosinedoc)
         if cosinedoc == 0:
             continue
-        #weight = weight / (cosinedoc * cosinequery)
+        weight = weight / (cosinedoc * cosinequery)
         rank.append([doc, weight])
     rank = sorted(rank, sortMostRelevant)
     num = 0
