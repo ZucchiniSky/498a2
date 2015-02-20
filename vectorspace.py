@@ -54,6 +54,7 @@ def weighTermTop(token, index, data, wscheme, c, memory):
     memory[token].append(w)
     print "term top memory is "
     print memory
+    print token
     return w, memory
 
 def weighTerm(token, index, data, wscheme, c, memory):
@@ -61,6 +62,7 @@ def weighTerm(token, index, data, wscheme, c, memory):
         wscheme = "tfx"
     print "term memory is "
     print memory
+    print token
     if memory.get(token) is not None and len(memory[token]) == 2:
         return memory[token][1], memory
     w, memory = weighTermTop(token, index, data, wscheme, c, memory)
@@ -72,6 +74,7 @@ def weighTerm(token, index, data, wscheme, c, memory):
         w /= math.sqrt(cosine)
     print "after term top memory is "
     print memory
+    print token
     memory[token].append(w)
     return w, memory
 
