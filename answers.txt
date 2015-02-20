@@ -1,0 +1,16 @@
+#SCOTT BOMMARITO
+#uniqname: zucchini
+#ASSIGNMENT 2
+#EECS 498 WN 2015
+My program supports all of the weighting schemes detailed in the Salton and Buckly paper. I chose "tfx-tfx" (also known as "tf-idx") and "txc-nfx". "txc-nfx" uses cosine normalization on the term frequencies for documents and augmented normalization on the term frequencies for queries.
+I received the following precision/recall results for "tfx-tfx".
+avg precision / 10 = 0.1968
+avg precision / 50 = 0.07408
+avg precision / 100 = 0.04632
+avg precision / 500 = 0.0124137931034
+I received the following results for "txc-nfx".
+avg precision / 10 = 0.2048
+avg precision / 50 = 0.07424
+avg precision / 100 = 0.04568
+avg precision / 500 = 0.0124310344828
+Oddly enough, "txc-nfx" beats "tfx-tfx" for the majority of the avg precisions. The precision/recall for the first 10 documents is .8% higher, which is slim but an improvement. The remainder of the differences are slimmer and "txc-nfx" usually performs better--interestingly, "tfx-tfx" performs performs better on the average precision for the first 100 documents, and then goes back to performing worse on the first 500 documents. I don't believe that any weighing system could perform much better than this without a modification to the index--connecting similar terms and concepts with some sort of semantic analysis and then building an index on this new tokenizer.
