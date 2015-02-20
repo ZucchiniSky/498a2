@@ -152,10 +152,12 @@ def genJudge():
     global judge
     judgein = open("cranfield.reljudge.test")
     for line in judgein:
-        list = line.split(" ")
-        if judge.get(list[0]) is None:
-            judge[list[0]] = set()
-        judge[list[0]].add(list[1])
+        list = line.strip().split(" ")
+        query = int(list[0])
+        doc = int(list[1])
+        if judge.get(query) is None:
+            judge[query] = set()
+        judge[query].add(doc)
     print judge
 
 def comparePrecisionRecall(rank, i):
