@@ -171,6 +171,23 @@ def main(args):
 #parses the test reljudge file
 def genJudge():
     global judge
+    global precsum10
+    global precsum50
+    global precsum100
+    global precsum500
+    global prectot10
+    global prectot50
+    global prectot100
+    global prectot500
+    judge = {}
+    precsum10 = 0
+    prectot10 = 0
+    precsum50 = 0
+    prectot50 = 0
+    precsum100 = 0
+    prectot100 = 0
+    precsum500 = 0
+    prectot500 = 0
     judgein = open("cranfield.reljudge.test")
     for line in judgein:
         list = line.strip().split(" ")
